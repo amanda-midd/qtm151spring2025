@@ -1,5 +1,5 @@
 -- SQLBook: Markup
-# <span style="color:darkblue"> Lecture 23 - Introduction to SQL </span>
+# <span style="color:blue"> Lecture 23 - Introduction to SQL </span>
 
 <font size = "5">
 
@@ -9,7 +9,7 @@ SQL is a language specializing in database management
 - Typical task is to extract data from server
 - Many concepts are similar to Python
 -- SQLBook: Markup
-# <span style="color:darkblue"> I. Connect to Local Server </span>
+# <span style="color:blue"> I. Connect to Local Server </span>
 
 <font size="5"> 
 
@@ -30,17 +30,17 @@ panel on the left:
 
 <img src="figures/serverconnection_sql_vscode-3.png" alt="drawing" width="300"/>
 -- SQLBook: Markup
-# <span style="color:darkblue"> II. Create SQL Table from Scratch </span>
+# <span style="color:blue"> II. Create SQL Table from Scratch </span>
 -- SQLBook: Markup
 <font size = "5">
 
 Delete existing table
 -- SQLBook: Code
+-- Active: 1744770427258@@127.0.0.1@5432@amandamiddelthon
 -- Active: 1710903290079@@127.0.0.1@5432@postgres
 -- If the table already exists we can drop it:
 -- If it doesn't exist nothing happens
--- System commands are in upper case and user defined
--- names are in lower case
+-- System commands are in upper case and user defined names are in lower case
 -- Comments are written with double dashes "--" rather than hastag (#)
 
 DROP TABLE IF EXISTS drivers;
@@ -55,7 +55,7 @@ Create empty table from codebook
 
 CREATE TABLE drivers(
     driver_id int,
-    driver_name varchar(30),
+    driver_name varchar(30), -- maximum character length allowed
     nationality varchar(15),
     victories int
 );    
@@ -101,10 +101,14 @@ Try it yourself!
 -- Make sure to deparate arguments by a semicolon!
 
 
+INSERT INTO drivers VALUES (21, 'Amanda Middelthon','American', 20);
 
+INSERT INTO drivers VALUES (9, 'Luiken VDL', 'Dutch', 75)
+
+INSERT INTO drivers VALUES (5, 'Beccerra', 'Colombian', 15)
 
 -- SQLBook: Markup
-# <span style="color:darkblue"> II. Dataset Operations </span>
+# <span style="color:blue"> II. Dataset Operations </span>
 
 
 <font size="5"> 
@@ -114,7 +118,9 @@ Extracting columns from table
 -- SELECT extracts certain COLUMNS
 -- FROM is used to indicate the source table
 
-SELECT driver_id, nationality FROM drivers;
+SELECT driver_id, nationality FROM drivers;  -- will return the 2 rows in the bottom
+
+-- this kind of command / extraction is called a "query"
 -- SQLBook: Markup
 <font size="5"> 
 
@@ -128,16 +134,17 @@ SELECT * FROM drivers;
 Subsetting rows
 -- SQLBook: Code
 -- The WHERE command evaluates logical conditions to subset rows
-SELECT * FROM drivers
-WHERE nationality = 'German';
+SELECT * FROM drivers  -- first subset/select certain rows ( or all * )
+WHERE nationality = 'German'; -- then extract rows that meet the condition after the " = " 
 
 -- Evalute OR conditions
 SELECT * FROM drivers
-WHERE (nationality = 'Colombian') OR (nationality = 'German');
+WHERE (nationality = 'Colombian') OR (nationality = 'German'); -- TRUE (extracted) of value matches at least one condition
 
 -- Evaluate AND conditions
 SELECT * FROM drivers
-WHERE (nationality = 'German') AND (driver_id = 3) ;
+WHERE (nationality = 'German') AND (driver_id = 3) ; -- TRUE (extracted) of value matches ALL condition
+
 
 -- SQLBook: Markup
 <font size="5"> 
@@ -146,7 +153,7 @@ Aggregate
 -- SQLBook: Code
 -- To compute aggregate statistics use a statistic function,
 -- such as SUM() or AVG() 
--- The AS is an alias which assigns a name to the aggregate statistic
+-- The AS is an 'alias' -> assigns a name to the aggregate statistic
 
 SELECT SUM(victories) AS sum_victories,
        COUNT(*) AS num_rows,
@@ -161,7 +168,7 @@ Sort
 -- SQLBook: Code
 -- Order in ascending order of victories
 -- Remember that * means that all columns are selected
-SELECT driver_name FROM drivers
+SELECT driver_name, victories FROM drivers
 ORDER BY victories ASC;
 
 -- Order in descending order of victories
@@ -178,7 +185,7 @@ ORDER BY victories DESC;
 -- The following code would NOT work because we used double quotations
 -- "Double quotations" are used to refer to column names
 SELECT * FROM drivers 
-WHERE nationality = 'German';
+WHERE nationality = "German"; -- this will not work, " " refer to column names
 -- SQLBook: Markup
 <font size = "5">
 
@@ -189,16 +196,17 @@ with more than 60 victories
 -- SQLBook: Code
 -- Write your own code!
 
-
+SELECT nationality, driver_id FROM drivers
+WHERE victories > 60
 
 -- SQLBook: Markup
-# <span style="color:darkblue"> III. Groupby + Chaining </span>
+# <span style="color:blue"> III. Groupby + Chaining </span>
 
 <font size="5"> 
 
 Groupby + Aggregate
 -- SQLBook: Code
--- This command computes summary statistics by nationalitySELECT COUNT(*) AS num_rows,
+-- This command computes summary statistics by nationality SELECT COUNT(*) AS num_rows,
 -- Including "nationality" (the grouping column) is optional in the select
 SELECT nationality,
        SUM(victories) AS sum_victories,
@@ -224,7 +232,7 @@ SELECT nationality,
        MAX(victories) AS max_victories
 FROM drivers
 GROUP BY nationality
-HAVING SUM(victories) > 50;
+HAVING SUM(victories) > 50; -- THIS subsets the data AFTER aggregation
 -- SQLBook: Markup
 <font size = "5">
 
@@ -240,11 +248,11 @@ SELECT nationality,
        MIN(victories) AS min_victories,
        MAX(victories) AS max_victories
 FROM drivers
-WHERE nationality = 'German'
-GROUP BY nationality
-HAVING SUM(victories) > 50;
+WHERE nationality = 'German' OR nationality = 'British' -- FIRST subset. only aggregating data with thid condition(s)
+GROUP BY nationality 
+HAVING SUM(victories) > 100 ; -- SECOND subset, only extracts data that meets this condition(s)
 -- SQLBook: Markup
-# <span style="color:darkblue"> IV. Learning more </span>
+# <span style="color:blue"> IV. Learning more </span>
 
 <font size = "5">
 
